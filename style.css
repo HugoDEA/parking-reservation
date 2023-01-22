@@ -1,0 +1,18 @@
+body{
+    background-color: #1ea89c;
+    color: #000000;
+}
+
+.box{
+    display: flex; /*pour que la div soit flexible*/
+    flex-direction: column;/**/
+}
+.login{
+    display: flex;
+    flex-direction: column; /*pour que les elements soit allignés verticalement*/
+    justify-content: center;/*aligne les div horizontalement */
+    align-items: center;/*verticalement */
+    width: 100%;
+    height: 100vh;
+}
+
