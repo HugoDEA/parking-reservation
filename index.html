@@ -1,23 +1,29 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Parking</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+
+        <title>Réservation Parking</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="box">
-    <div class="login">
-        <h1>Login</h1>
-        <form action="login.php" method="post">
-            <input type="text" name="username" placeholder="Nom d'utilisateur" required="required" />
-            <input type="password" name="password" placeholder="Mot de passe" required="required" />
-            <button type="submit" class="bouton">Se connecter</button>
-        </form>
+    <header>
+            <img src="parking.png" alt="Logo"  width="50px"; height="50px" >
+            <h2>Réservation Parking</h2>
+            <a href="login.html"  class="boutongauche">Se connecter</a>
+    </header>
+    <div class="container">
+        <div class="texte">
+            <h1>Une réservation <span class="typed"></span></h1>
+            <p>Soyez sûr d'avoir une place libre grace à Réservation Parking.</p>
+        </div>
+        <img src="imkage.jpg" alt="Creteil Soleil" class="creso" width="600" height="400" >
     </div>
-</div>
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/typed.min.js"></script>
+    <script src="./script.js"></script>
 </body>
 </html>

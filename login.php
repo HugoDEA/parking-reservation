@@ -23,13 +23,15 @@ $result = mysqli_query($conn, $sql);
 
 // Vérification du résultat de la requête
 if (mysqli_num_rows($result) > 0) {
-    // Identification réussie
-    echo "Identification réussie";
+    //echo "Identification réussi";
+    $_SESSION['username'] = $username;
+
+
+    header("Location: /dashboard.php");
 } else {
     // Identification échouée
-    echo "Identification échouée";
+    echo "Veuillez vous identifier avec les bons identifiants";
 }
 
-// Fermeture de la connexion à la base de données
-mysqli_close($conn);
+
 ?>
