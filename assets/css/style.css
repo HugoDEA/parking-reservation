@@ -15,15 +15,16 @@ header{
     font-size: 20px;
 }
 .creso{
-    margin: auto 0 auto auto;
     border-radius: 50px;
     padding: 10px;
     margin-bottom: 10px;
     display: flex;
+
 }
 h1{
     text-align: center;
 }
+
 p{
     text-align: center;
 }
@@ -35,13 +36,13 @@ input{
     padding: 10px;
     margin-bottom: 10px;
 }
-.boutongauche{
+
+.sedeconnecter{
     margin: auto 0 auto auto;
      justify-self: end;
      border: 1px solid #dddddd;
      border-radius: 5px;
      padding: 10px;
-     margin-bottom: 10px;
      background-color: #0b44ad;
      color: #ffffff;
      font-weight: 600;
@@ -50,8 +51,26 @@ input{
      display: flex;
      align-items: flex-end;
 }
+.boutonadmin{
+    margin: auto 0 auto auto;
+     justify-self: end;
+     border: 1px solid #dddddd;
+     border-radius: 5px;
+     padding: 10px;
+     background-color: #0b44ad;
+     color: #ffffff;
+     font-weight: 600;
+     font-size: 20px;
+     cursor: pointer;
+     display: flex;
+     align-items: flex-end;
+
+}
+
 .bouton{
-    width: 100%;
+    text-align: center;
+    margin: auto;
+    width: 105%;
     height: 40px;
     border: 1px solid #dddddd;
     border-radius: 5px;
@@ -59,6 +78,27 @@ input{
     color: #ffffff;
     cursor: pointer;
 }
+.boutonvert{
+    width: 105%;
+    height: 40px;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    background-color: green;
+    color: #ffffff;
+    cursor: pointer;
+}
+.boutonuser{
+     border: 1px solid #dddddd;
+     border-radius: 5px;
+     padding: 10px;
+     color: #ffffff;
+     cursor: pointer;
+     display: flex;
+     text-align: center;
+     display: flex; /*pour que la div soit flexible*/
+     justify-content: center; /*aligne les div horizontalement */
+     align-items: center; /*verticalement */
+    }
 
 .box{
     display: flex; /*pour que la div soit flexible*/
@@ -104,12 +144,14 @@ th, td {
 
 th {
     text-align: center;
-    background-color: #dddddd;
+    background-color: blue;
     font-weight: bold;
 }
 td{
     text-align: center;
 }
 
-
-
+#test
+{
+    background-color: green;
+}

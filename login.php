@@ -2,8 +2,8 @@
 // Connexion à la base de données
 $host = "localhost";
 $username = "root";
-$password = "";
-$dbname = "raspberrypi";
+$password = "Parking852!";
+$dbname = "parking";
 $conn = mysqli_connect($host, $username, $password, $dbname);
 
 // Vérification de la connexion
@@ -16,7 +16,7 @@ $username = $_POST['username'];
 $password = $_POST['password'];
 
 // Préparation de la requête SQL
-$sql = "SELECT * FROM connexion WHERE username='$username' AND password='$password'";
+$sql = "SELECT * FROM useraccount WHERE username='$username' AND password='$password'";
 
 // Exécution de la requête SQL
 $result = mysqli_query($conn, $sql);
@@ -28,7 +28,8 @@ if (mysqli_num_rows($result) > 0) {
 
 
     header("Location: /dashboard.php");
-} else {
+} 
+else {
     // Identification échouée
     echo "Veuillez vous identifier avec les bons identifiants";
 }
