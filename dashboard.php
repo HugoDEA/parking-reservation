@@ -12,6 +12,7 @@ if(!isset($_SERVER['HTTP_REFERER'])){
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/css/style.css">
+
     <title>Réservation Parking</title>
 </head>
 <body>
@@ -22,115 +23,93 @@ if(!isset($_SERVER['HTTP_REFERER'])){
             <a href="logout.php"  class="sedeconnecter">Se déconnecter</a>
     </header>
     <div class="titre">
+   
+
+ 
+
         <?php
 
-        if(isset($_SESSION['username'])){
-            echo "<p>Bonjour, Vous êtes connecté en tant que " . $_SESSION['username'];
+        #if(isset($_SESSION['username'])){
+            #echo "<p>Bonjour, Vous êtes connecté en tant que " . $_SESSION['username'];
+          #}
+       # else{
+            #echo "<p>Bonjour, veuillez-vous connecter</p>";
+
+       # }
+
+
+        ?><p id="message"></p>
+
+        <script>
+          window.onload = function() {
+            updateTime();
+          };
+        
+          function updateTime() {
+            // Récupère la date actuelle
+            var date = new Date();
+        
+            // Formate la date en chaîne de caractères
+            var dateString = date.toLocaleDateString();
+        
+            // Récupère l'heure actuelle
+            var time = date.toLocaleTimeString();
+        
+            // Affiche le message dans le paragraphe
+            document.getElementById("message").innerHTML = "Bonjour <?php echo $_SESSION['username'] ?>, nous sommes le " + dateString + " et il est actuellement " + time + ".";
           }
-        else{
-            echo "<p>Bonjour, veuillez-vous connecter</p>";
-
-        }
-
-
-        ?>
-
+        
+          // Appelle la fonction updateTime toutes les 1000 milliseconds (1 seconde)
+          setInterval(updateTime, 1000);
+        </script>
+        
+</div>
     </div>
 
-    <table>
-        <tr>
-            <th>Lundi 16 mai</th>
-            <th>Mardi 17 mai</th>
-            <th>Mercredi 18 mai</th>
-            <th>Jeudi 19 mai</th>
-            <th>Vendredi 20 mai</th>
-            <th>Samedi 21 mai</th>
-            <th>Dimanche 22 mai</th>
-        </tr>
-        <tr>
-            <td>08:00</td>
-            <td>08:00</td>
-            <td>08:00</td>
-            <td>        <?php
+    <?php
 
-                $host = "localhost";
-                $username = "root";
-                $password = "Parking852!";
-                $dbname = "parking";
-                $conn = mysqli_connect($host, $username, $password, $dbname);
-                // Requête pour sélectionner toutes les heures de début dans la table `reservation`
-                $query = "SELECT starting_hour FROM reservation";
-                $result = mysqli_query($conn, $query);
+// Connect to the database
+$conn = mysqli_connect('localhost', 'root', 'Parking852!', 'parking');
 
-                // Boucle pour afficher toutes les heures de début
-                while ($row = mysqli_fetch_array($result)) {
-                    echo $row['starting_hour'] . "<br>";
-                }
+// Check the connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
-                // Fermeture de la connexion à la base de données
-                mysqli_close($conn);
+// Query to select the date, starting_hour, and finishing_hour for all entries in the schedule table
+$sql = "SELECT id, date, starting_hour, finishing_hour FROM schedule";
 
-                ?></td>
-            <td>08:00</td>
-            <td>08:00</td>
-            <td>08:00</td>
-        </tr>
-        <tr>            
-            <td>10:00</td>
-            <td>10:00</td>
-            <td>10:00</td>
-            <td>10:00</td>
-            <td>10:00</td>
-            <td>10:00</td>
-            <td>10:00</td>
-        </tr>
-        <tr>
-            <td>12:00</td>
-            <td>12:00</td>
-            <td>12:00</td>
-            <td>12:00</td>
-            <td>12:00</td>
-            <td>12:00</td>
-            <td>12:00</td>
-        </tr>
-        <tr>
-            <td>14:00</td>
-            <td>14:00</td>
-            <td>14:00</td>
-            <td>14:00</td>
-            <td>14:00</td>
-            <td>14:00</td>
-            <td>14:00</td>
-        </tr>
-        <tr>
-            <td>16:00</td>
-            <td>16:00</td>
-            <td>16:00</td>
-            <td>16:00</td>
-            <td>16:00</td>
-            <td>16:00</td>
-            <td>16:00</td>
-        </tr>
-        <tr>
-            <td>18:00</td>
-            <td>18:00</td>
-            <td>18:00</td>
-            <td>18:00</td>
-            <td>18:00</td>
-            <td>18:00</td>
-            <td>18:00</td>
-        </tr>
-        <tr>         
-            <td>20:00</td>
-            <td>20:00</td>
-            <td>20:00</td>
-            <td>20:00</td>
-            <td>20:00</td>
-            <td>20:00</td>
-            <td>20:00</td>
-        </tr>
-    </table>
-  
+// Execute the query
+$result = mysqli_query($conn, $sql);
+
+// Check if the query returned any data
+if (mysqli_num_rows($result) > 0) {
+    // Display the results in a table
+    echo "<table>";
+    echo "<tr>";
+    echo "<th>Date</th>";
+    echo "<th>Heure </th>";
+    /*echo "<th>Heure de fin</th>";*/
+    echo "</tr>";
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo "<tr>";
+        echo "<td>" . $row['date'] . "</td>";
+        echo "<td>" . $row['starting_hour'] . "</td>";
+        /*echo "<td>" . $row['finishing_hour'] . "</td>";*/
+        echo "</tr>";
+    }
+    echo "</table>";
+} else {
+    // No data was returned
+    echo "No data found.";
+}
+
+// Close the database connection
+mysqli_close($conn);
+
+?>
+
+<script src="assets/js/script.js"></script>
 
 </body>
 </html>

@@ -9,19 +9,22 @@
     <script src="assets/js/script.js"></script>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
+<body id="test">
     <header>
         <a href="index.html">
             <img src="assets/img/parking.png" alt="Logo" width="50px" ; height="50px" >
-        </a>        <h2>Réservation Parking</h2>
-    </header>
+        </a>
+        <h2>Réservation Parking</h2>
+</header>
+<div class="box">
     <div class="login">
-        <form action="login.php" method="post">
+        <form action="loginadmin.php" method="post">
             <h1>Veuillez vous identifier</h1>
             <input type="text" name="username" placeholder="Nom d'utilisateur" required="required" />
             <input type="password" name="password" placeholder="Mot de passe" required="required" />
-            <button type="submit" class="bouton">Se connecter</button>
+            <button type="submit" class="boutonvert">Se connecter</button>
         </form>
     </div>
+</div>
 </body>
 </html>
