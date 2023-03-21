@@ -27,7 +27,7 @@ if (mysqli_num_rows($result) > 0) {
     $_SESSION['username'] = $username;
 
 
-    header("Location: /dashboardadmin.php");
+    header("Location: /tableaudebord.php");
 } 
 else {
     // Identification échouée

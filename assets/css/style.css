@@ -53,18 +53,17 @@ input{
 }
 
 .sedeconnecter{
+    font-size: 40px;
     margin: auto 0 auto auto;
      justify-self: end;
      border: 1px solid #dddddd;
      border-radius: 5px;
      padding: 10px;
-     background-color: #0b44ad;
      color: #ffffff;
-     font-weight: 600;
-     font-size: 20px;
      cursor: pointer;
      display: flex;
      align-items: flex-end;
+
 }
 .boutonadmin{
     font-size: 40px;
@@ -170,9 +169,19 @@ th {
 }
 td{
     text-align: center;
+
 }
 
 #test
 {
     background-color: green;
+}
+
+.btn{
+    width: 100%;
+    height: 100%;
+}
+
+.reservation{
+
 }

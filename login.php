@@ -15,24 +15,39 @@ if (!$conn) {
 $username = $_POST['username'];
 $password = $_POST['password'];
 
-// Préparation de la requête SQL
-$sql = "SELECT * FROM useraccount WHERE username='$username' AND password='$password'";
+// Préparation de la requête SQL pour la table "useraccount"
+$user_sql = "SELECT * FROM useraccount WHERE username='$username' AND password='$password'";
 
-// Exécution de la requête SQL
-$result = mysqli_query($conn, $sql);
+// Exécution de la requête SQL pour la table "useraccount"
+$user_result = mysqli_query($conn, $user_sql);
 
-// Vérification du résultat de la requête
-if (mysqli_num_rows($result) > 0) {
-    //echo "Identification réussi";
+// Vérification du résultat de la requête pour la table "useraccount"
+if (mysqli_num_rows($user_result) > 0) {
+    //echo "Identification réussie pour l'utilisateur";
     $_SESSION['username'] = $username;
+    $row = mysqli_fetch_assoc($user_result);
+    $_SESSION['rfid'] = $row['RFID'];
 
-
-    header("Location: /dashboard.php");
+    header("Location: /reservation.php");
 } 
+
+// Sinon, vérification de la table "adminaccount"
 else {
-    // Identification échouée
-    echo "Veuillez vous identifier avec les bons identifiants";
+    // Préparation de la requête SQL pour la table "adminaccount"
+    $admin_sql = "SELECT * FROM adminaccount WHERE username='$username' AND password='$password'";
+
+    // Exécution de la requête SQL pour la table "adminaccount"
+    $admin_result = mysqli_query($conn, $admin_sql);
+
+    // Vérification du résultat de la requête pour la table "adminaccount"
+    if (mysqli_num_rows($admin_result) > 0) {
+        //echo "Identification réussie pour l'administrateur";
+        $_SESSION['username'] = $username;
+        header("Location: /tableaudebord.php");
+    } 
+    else {
+        // Identification échouée
+        echo "Veuillez vous identifier avec les bons identifiants";
+    }
 }
-
-
 ?>
