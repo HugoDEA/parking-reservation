@@ -1,3 +1,35 @@
+<?php
+if(!isset($_SERVER['HTTP_REFERER'])){
+    header('location:loginadmin.php');
+    exit;
+}
+?>
+
+<?php
+// Démarrer la session
+
+// Connexion à la base de données
+$host = "localhost";
+$username = "root";
+$password = "Parking852!";
+$dbname = "parking";
+$conn = mysqli_connect($host, $username, $password, $dbname);
+
+if (!$conn) {
+  die('Erreur de connexion à la base de données : ' . mysqli_connect_error());
+}
+
+$reserved = "SELECT * FROM status";
+$result = mysqli_query($conn, $reserved); // Exécution de la requête SQL
+
+// Stockage des résultats de la requête dans un tableau
+$reserved_data = array();
+while ($row = mysqli_fetch_assoc($result)) {
+  $reserved_data[] = $row;
+}
+// Fermer la connexion à la base de données
+mysqli_close($conn);
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -41,5 +73,29 @@
             // Appelle la fonction updateTime toutes les 1000 milliseconds (1 seconde)
             setInterval(updateTime, 1000);
         </script>
+<table>
+    <th>Etage 1 :</th>
+    <tr>
+    <td> Places disponibles :
+    <?php foreach ($reserved_data as $reserved_rows) { 
+    echo $reserved_rows['floor1_available']; 
+         } ?>
+    </td>
+  </tr>
+  <tr>
+    <th>Etage 2 :</th>
+  </tr>
+  <td> Places disponibles :
+  <?php foreach ($reserved_data as $reserved_rows) { 
+    echo $reserved_rows['floor2_available']; 
+         } ?>
+  </td>
+
+  <td> Places Reservées :
+    <?php foreach ($reserved_data as $reserved_rows) { 
+    echo $reserved_rows['floor2_reserved']; 
+         } ?>
+    </td>
+</table>
 </body>
 </html>

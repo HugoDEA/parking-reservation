@@ -116,7 +116,7 @@ input{
     color: #ffffff;
     cursor: pointer;
 }
-table{
+.bjr{
     height: 600px;
     font-size: 30px;
 }
@@ -150,6 +150,7 @@ table{
     text-align: center;
 }
 
+
 table {
     border-collapse: collapse; /* Pour que les bordures des cellules soient fusionnées */
     width: 100%;/*pour que la table prenne toute la largeur de la page*/
@@ -182,6 +183,3 @@ td{
     height: 100%;
 }
 
-.reservation{
-
-}

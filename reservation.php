@@ -21,24 +21,10 @@ if(isset($_POST['submit'])) {
     die('Erreur de connexion à la base de données : ' . mysqli_connect_error());
   }
 
-  
-mysqli_query($conn, "DELETE FROM dates");
-
-// Insérer les nouvelles dates
-mysqli_query($conn, "INSERT INTO dates (date) VALUES 
-                    (CURDATE()), 
-                    (DATE_ADD(CURDATE(), INTERVAL 1 DAY)), 
-                    (DATE_ADD(CURDATE(), INTERVAL 2 DAY)), 
-                    (DATE_ADD(CURDATE(), INTERVAL 3 DAY)), 
-                    (DATE_ADD(CURDATE(), INTERVAL 4 DAY)), 
-                    (DATE_ADD(CURDATE(), INTERVAL 5 DAY)), 
-                    (DATE_ADD(CURDATE(), INTERVAL 6 DAY))");
-  
   $rfid = $_SESSION['rfid'];
   // Requête SQL à exécuter
-  $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','2023-02-02','08:00:00','10:00:00')";
-  $sql2 = "SELECT date FROM dates";
-
+    $today = date("y-m-d");
+    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','08:00:00','10:00:00')";
   if (mysqli_query($conn, $sql)) {
     echo 'Donnée insérée avec succès';
   } else {
@@ -92,7 +78,7 @@ mysqli_query($conn, "INSERT INTO dates (date) VALUES
 </div>
     </div>
 
-    <table>
+    <table class="bjr">
         <tr>
             <th>Lundi 13 mars</th>
             <th>Mardi 14 mars</th>
