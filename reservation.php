@@ -7,6 +7,9 @@ if(!isset($_SERVER['HTTP_REFERER'])){
 
 <?php
 // Démarrer la session
+setlocale(LC_TIME, 'fr_FR.utf8'); // définit la locale en français
+$ajd=date('l j F');
+
 
 // Vérifier si le formulaire a été soumis
 if(isset($_POST['submit'])) {
@@ -80,14 +83,13 @@ if(isset($_POST['submit'])) {
 
     <table class="bjr">
         <tr>
-            <th>Lundi 13 mars</th>
-            <th>Mardi 14 mars</th>
+            <th><?php echo $ajd;?></th>
+            <th></th>
             <th>Mercredi 15 mars</th>
             <th>Jeudi 16 mars</th>
             <th>Vendredi 17 mars</th>
             <th>Samedi 18 mars</th>
             <th>Dimanche 19 mars</th>
-
         </tr>
         <tr>
             <td><form method="post">

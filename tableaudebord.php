@@ -74,27 +74,32 @@ mysqli_close($conn);
             setInterval(updateTime, 1000);
         </script>
 <table>
-    <th>Etage 1 :</th>
-    <tr>
-    <td> Places disponibles :
+  <div class="policetdb">Etage 1 :</div>
+    <td class="policetd"> Places disponibles : <div class="red">
     <?php foreach ($reserved_data as $reserved_rows) { 
     echo $reserved_rows['floor1_available']; 
          } ?>
+    </div>
     </td>
-  </tr>
+</table>
+<br>
+<br>
+<table>
   <tr>
-    <th>Etage 2 :</th>
+    <div class="policetdb">Etage 2 :</div>
   </tr>
-  <td> Places disponibles :
+  <td class="policetd"> Places disponibles : <div class="red">
   <?php foreach ($reserved_data as $reserved_rows) { 
     echo $reserved_rows['floor2_available']; 
          } ?>
+  </div>
   </td>
 
-  <td> Places Reservées :
-    <?php foreach ($reserved_data as $reserved_rows) { 
+  <td class="policetd"> Places reservées : <div class="red">
+  <?php foreach ($reserved_data as $reserved_rows) { 
     echo $reserved_rows['floor2_reserved']; 
          } ?>
+  </div>
     </td>
 </table>
 </body>
