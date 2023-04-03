@@ -75,11 +75,9 @@ mysqli_close($conn);
         </script>
 <table>
   <div class="policetdb">Etage 1 :</div>
-    <td class="policetd"> Places disponibles : <div class="red">
-    <?php foreach ($reserved_data as $reserved_rows) { 
+    <td class="policetd"> Places disponibles :  <?php foreach ($reserved_data as $reserved_rows) { 
     echo $reserved_rows['floor1_available']; 
          } ?>
-    </div>
     </td>
 </table>
 <br>
@@ -88,18 +86,14 @@ mysqli_close($conn);
   <tr>
     <div class="policetdb">Etage 2 :</div>
   </tr>
-  <td class="policetd"> Places disponibles : <div class="red">
-  <?php foreach ($reserved_data as $reserved_rows) { 
+  <td class="policetd"> Places disponibles :  <?php foreach ($reserved_data as $reserved_rows) { 
     echo $reserved_rows['floor2_available']; 
          } ?>
-  </div>
   </td>
 
-  <td class="policetd"> Places reservées : <div class="red">
-  <?php foreach ($reserved_data as $reserved_rows) { 
+  <td class="policetd"> Places reservées :   <?php foreach ($reserved_data as $reserved_rows) { 
     echo $reserved_rows['floor2_reserved']; 
          } ?>
-  </div>
     </td>
 </table>
 </body>

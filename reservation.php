@@ -47,13 +47,17 @@ $todayplussept= date("Y-m-d", strtotime('+7 day'));
 if(isset($_POST['submit'])) {
     $valeur = $_POST['submit'];
     switch($valeur) {
-        case 'bouton1':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','08:00:00','10:00:00')";
-            mysqli_query($conn, $sql);
-            break;
+        case 'bouton1': //Si la valeur est bouton 1 alors elle execute la case bouton 1
+            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$ajd','08:00:00','10:00:00')";//Crée une chaine de caractere SQL afin d'inserer une reservation dans la table reservation 
+            mysqli_query($conn, $sql);//Execute la requete
+            $ajd_json = json_encode($ajd);//Convertit ajd en une chaine JSON grace à json_encore, pour convertir de PHP en javascript
+            echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez bien réservé pour le ' + ajd + ' de 08:00 à 10:00.');</script>";//Affiche une alterte de le navigateur, crée une variable ajd et la met en json
+            break;         
         case 'bouton2':
             $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','10:00:00','12:00:00')";
             mysqli_query($conn, $sql);
+            $ajd_json = json_encode($ajd);//Convertit ajd en une chaine JSON grace à json_encore, pour convertir de PHP en javascript
+            echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez bien réservé pour le ' + ajd + ' de 10:00 à 12:00.');</script>";//Affiche une alterte de le navigateur, crée une variable ajd et la met en json
             break;
         case 'bouton3':
             $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','12:00:00','14:00:00')";
@@ -309,8 +313,8 @@ if(isset($_POST['submit'])) {
             <th><?php echo $ajdpluscinq?></th>
             <th><?php echo $ajdplussix?></th>
         </tr>
-        <tr>
-            <td><form method="post">
+        <tr>                <form method="post">
+            <td>
                 <button name="submit" type="submit" value="bouton1">
                     08:00
                 </button>
