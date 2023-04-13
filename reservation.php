@@ -4,6 +4,33 @@ if(!isset($_SERVER['HTTP_REFERER'])){
     exit;
 }
 ?>
+<?php 
+/*require('vendor/autoload.php');
+
+use \PhpMqtt\Client\MqttClient;
+use \PhpMqtt\Client\ConnectionSettings;
+
+$server   = '172.16.12.75';
+$port     = 1883;
+$clientId = rand(5, 15);
+$username = 'admin';
+$password = '1234';
+$clean_session = false;
+$mqtt_version = MqttClient::MQTT_3_1_1;
+
+$connectionSettings = (new ConnectionSettings)
+  ->setUsername($username)
+  ->setPassword($password)
+  ->setKeepAliveInterval(60)
+  ->setLastWillTopic('emqx/test/last-will')
+  ->setLastWillMessage('client disconnect')
+  ->setLastWillQualityOfService(1);
+
+$mqtt = new MqttClient($server, $port, $clientId, $mqtt_version);
+
+$mqtt->connect($connectionSettings, $clean_session);
+*/
+?>
 
 <?php
 // Démarrer la session
@@ -13,17 +40,17 @@ setlocale(LC_TIME, 'fra_FRa');
 $ajd=strftime('%A %e %B');
 $ajd = ucfirst($ajd); // met la première lettre en majuscule
 $ajdplusun = strftime('%A %e %B', strtotime('+1 day'));
-$ajdplusun = ucfirst($ajdplusun); // met la première lettre en majuscule
+$ajdplusun = ucfirst($ajdplusun); 
 $ajdplusdeux = strftime('%A %e %B', strtotime('+2 day'));
-$ajdplusdeux = ucfirst($ajdplusdeux); // met la première lettre en majuscule$ajdplustrois=date('l j F', strtotime('+3 day'));
+$ajdplusdeux = ucfirst($ajdplusdeux); 
 $ajdplustrois = strftime('%A %e %B', strtotime('+3 day'));
-$ajdplustrois = ucfirst($ajdplustrois); // met la première lettre en majuscule
+$ajdplustrois = ucfirst($ajdplustrois); 
 $ajdplusquatre = strftime('%A %e %B', strtotime('+4 day'));
-$ajdplusquatre = ucfirst($ajdplusquatre); // met la première lettre en majuscule$ajdpluscinq=date('l j F', strtotime('+5 day'));
+$ajdplusquatre = ucfirst($ajdplusquatre); 
 $ajdpluscinq = strftime('%A %e %B', strtotime('+5 day'));
-$ajdpluscinq = ucfirst($ajdpluscinq); // met la première lettre en majuscule
+$ajdpluscinq = ucfirst($ajdpluscinq); 
 $ajdplussix = strftime('%A %e %B', strtotime('+6 day'));
-$ajdplussix = ucfirst($ajdplussix); // met la première lettre en majuscule$rfid = $_SESSION['rfid'];
+$ajdplussix = ucfirst($ajdplussix); 
 $rfid = $_SESSION['rfid'];
 $today = date("Y-m-d");
 $todayplusun = date("Y-m-d", strtotime('+1 day'));
@@ -44,15 +71,38 @@ $todayplussept= date("Y-m-d", strtotime('+7 day'));
   if (!$conn) {
     die('Erreur de connexion à la base de données : ' . mysqli_connect_error());
   }
+  $class = ""; 
 if(isset($_POST['submit'])) {
     $valeur = $_POST['submit'];
     switch($valeur) {
-        case 'bouton1': //Si la valeur est bouton 1 alors elle execute la case bouton 1
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$ajd','08:00:00','10:00:00')";//Crée une chaine de caractere SQL afin d'inserer une reservation dans la table reservation 
-            mysqli_query($conn, $sql);//Execute la requete
-            $ajd_json = json_encode($ajd);//Convertit ajd en une chaine JSON grace à json_encore, pour convertir de PHP en javascript
-            echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez bien réservé pour le ' + ajd + ' de 08:00 à 10:00.');</script>";//Affiche une alterte de le navigateur, crée une variable ajd et la met en json
-            break;         
+        case 'bouton1':
+            // Interroger la base de données pour compter le nombre de réservations effectuées par l'utilisateur avec l'étiquette RFID
+            $count_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $result = mysqli_query($conn, $count_sql);
+            $row = mysqli_fetch_assoc($result);
+            $num_reservations = $row['num_reservations'];
+            
+            // Vérifier si l'utilisateur a déjà effectué sept réservations
+            if ($num_reservations >= 7) {
+                $class = "boutonrouge";
+                echo "<script>alert('Désolé, il n y a plus de places.');</script>";
+            } else {
+                // Insérer la réservation dans la base de données
+                $class = "bouton1";
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','08:00:00','10:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publier le message de réservation en utilisant MQTT
+                //$topic = 'bdd';
+                //$message = 'de 08:00 a 10:00!';
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Afficher le message de réussite dans le navigateur
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
+            
+            }
+            break;
         case 'bouton2':
             $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','10:00:00','12:00:00')";
             mysqli_query($conn, $sql);
@@ -269,37 +319,34 @@ if(isset($_POST['submit'])) {
         <a href="index.html">
             <img src="assets/img/parking.png" alt="Logo" width="50px" ; height="50px" >
         </a>            <h2>Réservation Parking</h2>
-            <a href="index.html"  class="sedeconnecter">Se deconnecter</a>
+            <a href="index.html"  class="sedeconnecter">Déconnexion</a>
     </header>
     <div class="titre">
     <p id="message"></p>
+    <script>window.onload = function() {
+  updateTime();
+};
 
-<script>
-  window.onload = function() {
-    updateTime();
-  };
+function updateTime() {
+// Récupère la date actuelle
+var date = new Date();
 
-  function updateTime() {
-  // Récupère la date actuelle
-  var date = new Date();
+// Options pour formater la date en français
+var options = { weekday: 'long', day: 'numeric', month: 'long' };
 
-  // Options pour formater la date en français
-  var options = { weekday: 'long', day: 'numeric', month: 'long' };
+// Formate la date en chaîne de caractères en français
+var dateString = date.toLocaleDateString('fr-FR', options);
 
-  // Formate la date en chaîne de caractères en français
-  var dateString = date.toLocaleDateString('fr-FR', options);
+// Récupère l'heure actuelle
+var time = date.toLocaleTimeString();
 
-  // Récupère l'heure actuelle
-  var time = date.toLocaleTimeString();
-
-  // Affiche le message dans le paragraphe
-  document.getElementById("message").innerHTML = "Bonjour <?php echo $_SESSION['username'] ?>, nous sommes " + dateString + " et il est actuellement " + time + "";
+// Affiche le message dans le paragraphe
+document.getElementById("message").innerHTML = "Bonjour <?php echo $_SESSION['username'] ?>, nous sommes " + dateString + " et il est actuellement " + time + "";
 }
 
-  // Appelle la fonction updateTime toutes les 1000 milliseconds (1 seconde)
-  setInterval(updateTime, 1000);
+// Appelle la fonction updateTime toutes les 1000 milliseconds (1 seconde)
+setInterval(updateTime, 1000);
 </script>
-
 </div>
     </div>
 
@@ -315,7 +362,7 @@ if(isset($_POST['submit'])) {
         </tr>
         <tr>                <form method="post">
             <td>
-                <button name="submit" type="submit" value="bouton1">
+                <button name="submit" type="submit" value="bouton1" class="<?php echo $class; ?>">
                     08:00
                 </button>
             </td>
@@ -558,4 +605,5 @@ if(isset($_POST['submit'])) {
         </tr>
     </table>
 </body>
+<script src="assets\js\script.js"></script>
 </html>

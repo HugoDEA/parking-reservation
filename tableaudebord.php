@@ -47,53 +47,70 @@ mysqli_close($conn);
             <img src="assets/img/parking.png" alt="Logo" width="50px" ; height="50px" >
         </a>
         <h2>Réservation Parking</h2>
-        <a href="index.html"  class="sedeconnecter">Se deconnecter</a>
+        <a href="index.html"  class="sedeconnecter">Déconnexion</a>
 </header>
     <div class="titre">
         <p id="message"></p>
         <script>
-            window.onload = function() {
-                updateTime();
-            };
+          window.onload = function() {
+          updateTime();
+         };
 
-            function updateTime() {
-                // Récupère la date actuelle
-                var date = new Date();
+         function updateTime() {
+  // Récupère la date actuelle
+  var date = new Date();
 
-                // Formate la date en chaîne de caractères
-                var dateString = date.toLocaleDateString();
+  // Options pour formater la date
+  var options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
 
-                // Récupère l'heure actuelle
-                var time = date.toLocaleTimeString();
+  // Formate la date en français
+  var dateString = date.toLocaleDateString('fr-FR', options);
 
-                // Affiche le message dans le paragraphe
-                document.getElementById("message").innerHTML = "Bonjour <?php echo $_SESSION['username'] ?>, nous sommes le " + dateString + " et il est actuellement " + time + ".";
-            }
+  // Met la première lettre du jour de la semaine en majuscule
+  dateString = dateString.replace(/^\w/, function(l){ return l.toUpperCase() });
+
+  // Récupère l'heure actuelle
+  var time = date.toLocaleTimeString();
+
+
+  document.getElementById("message").innerHTML = "Espace administrateur<br> " + dateString + " <br> " + time + "";
+}
+
+
+
+// Appelle la fonction updateTime toutes les 1000 milliseconds (1 seconde)
+setInterval(updateTime, 1000);
 
             // Appelle la fonction updateTime toutes les 1000 milliseconds (1 seconde)
             setInterval(updateTime, 1000);
         </script>
 <table>
-  <div class="policetdb">Etage 1 :</div>
-    <td class="policetd"> Places disponibles :  <?php foreach ($reserved_data as $reserved_rows) { 
+  <div class="policetdb">Étage 1 </div>
+    <td class="policetd"> <br>Places disponibles :  <?php foreach ($reserved_data as $reserved_rows) { 
     echo $reserved_rows['floor1_available']; 
          } ?>
+         <br>
+         <br>
     </td>
 </table>
 <br>
 <br>
 <table>
   <tr>
-    <div class="policetdb">Etage 2 :</div>
+    <div class="policetdb">Étage 2 </div>
   </tr>
-  <td class="policetd"> Places disponibles :  <?php foreach ($reserved_data as $reserved_rows) { 
+  <td class="policetd"> <br>Places disponibles :  <?php foreach ($reserved_data as $reserved_rows) { 
     echo $reserved_rows['floor2_available']; 
          } ?>
+         <br>
+         <br>
   </td>
 
-  <td class="policetd"> Places reservées :   <?php foreach ($reserved_data as $reserved_rows) { 
+  <td class="policetd"> <br>Places reservées :   <?php foreach ($reserved_data as $reserved_rows) { 
     echo $reserved_rows['floor2_reserved']; 
          } ?>
+         <br>
+         <br>
     </td>
 </table>
 </body>

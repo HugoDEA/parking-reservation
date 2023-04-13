@@ -51,8 +51,23 @@ input{
     padding: 10px;
     margin-bottom: 10px;
 }
+.sedeconnecterreservation{
+    text-decoration: none;
+     font-size: 40px;
+     margin: auto 0 auto auto;
+     justify-self: end;
+     border: 1px solid #dddddd;
+     border-radius: 5px;
+     padding: 10px;
+     color: #ffffff;
+     cursor: pointer;
+     display: flex;
+     align-items: flex-end;
+}
 
 .sedeconnecter{
+    background-color: rgb(0, 15, 145);
+    text-decoration: none;
      font-size: 40px;
      margin: auto 0 auto auto;
      justify-self: end;
@@ -65,9 +80,14 @@ input{
      align-items: flex-end;
 
 }
+
+.boutonrouge{
+    background-color: red;
+}
+
 .boutonadmin{
-    font-size: 40px;
-    margin: auto 0 auto auto;
+     font-size: 40px;
+     margin: auto 0 auto auto;
      justify-self: end;
      border: 1px solid #dddddd;
      border-radius: 5px;
@@ -80,8 +100,8 @@ input{
 }
 
 .boutonuser{
-    font-size: 40px;
-    position: fixed;
+     font-size: 40px;
+     position: fixed;
      border: 1px solid #dddddd;
      border-radius: 5px;
      padding: 10px;
@@ -97,7 +117,6 @@ input{
     text-align: center;
     margin: auto;
     width: 102%;
-    height: 60px;
     border: 1px solid #dddddd;
     border-radius: 5px;
     background-color: #0059ff;
@@ -158,11 +177,12 @@ table {
 
 th, td {
     border: 1px solid #dddddd; /* Pour les bordures des cellules */
-    padding: 8px; /* Pour les espaces entre les cellules */
+    padding: 16px; /* Pour les espaces entre les cellules */
     text-align: center;
 }
 
 th {
+    font-size: 35px;
     text-align: center;
     background-color: blue;
     font-weight: bold;
@@ -182,6 +202,7 @@ td{
 }
 
 button{
+    font-size: 35px;
     background-color: rgb(18, 161, 18);
     color: white;
     width: 100%;
@@ -205,8 +226,9 @@ button.reservation {
     margin-bottom: 15px;
 }
 .policetd{
+    padding: 8px;
     border: 10px solid #dddddd; /* Pour les bordures des cellules */
-    background-color: rgb(0, 145, 19);
+    background-color: rgb(0, 15, 145);
     font-size: 30px;
     font-weight: 600;
     margin-bottom: 10px;
