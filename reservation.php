@@ -4,13 +4,13 @@ if(!isset($_SERVER['HTTP_REFERER'])){
     exit;
 }
 ?>
-<?php 
-/*require('vendor/autoload.php');
+<?php
+require('vendor/autoload.php');
 
 use \PhpMqtt\Client\MqttClient;
 use \PhpMqtt\Client\ConnectionSettings;
 
-$server   = '172.16.12.75';
+$server   = '172.16.12.70';
 $port     = 1883;
 $clientId = rand(5, 15);
 $username = 'admin';
@@ -29,12 +29,11 @@ $connectionSettings = (new ConnectionSettings)
 $mqtt = new MqttClient($server, $port, $clientId, $mqtt_version);
 
 $mqtt->connect($connectionSettings, $clean_session);
-*/
+
 ?>
 
 <?php
 // Démarrer la session
-//mettre apres avoir cliquer bouton "vous avez reserver de 8h a 10h
 setlocale(LC_TIME, 'fra_FRa');
 
 $ajd=strftime('%A %e %B');
@@ -71,115 +70,488 @@ $todayplussept= date("Y-m-d", strtotime('+7 day'));
   if (!$conn) {
     die('Erreur de connexion à la base de données : ' . mysqli_connect_error());
   }
-  $class = ""; 
-if(isset($_POST['submit'])) {
+  $class = ""; if (isset($_POST['submit'])) {
     $valeur = $_POST['submit'];
     switch($valeur) {
         case 'bouton1':
-            // Interroger la base de données pour compter le nombre de réservations effectuées par l'utilisateur avec l'étiquette RFID
-            $count_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
-            $result = mysqli_query($conn, $count_sql);
-            $row = mysqli_fetch_assoc($result);
-            $num_reservations = $row['num_reservations'];
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
             
-            // Vérifier si l'utilisateur a déjà effectué sept réservations
-            if ($num_reservations >= 7) {
-                $class = "boutonrouge";
-                echo "<script>alert('Désolé, il n y a plus de places.');</script>";
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
             } else {
-                // Insérer la réservation dans la base de données
-                $class = "bouton1";
+                // Insere la reservation dans la BDD
                 $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','08:00:00','10:00:00')";
                 mysqli_query($conn, $sql);
                 
-                // Publier le message de réservation en utilisant MQTT
-                //$topic = 'bdd';
-                //$message = 'de 08:00 a 10:00!';
-                //$mqtt->publish($topic, $message, 0);
+                // Publish the reservation message using MQTT
+                $topic = 'bdd';
+                $message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                $mqtt->publish($topic, $message, 0);
                 
-                // Afficher le message de réussite dans le navigateur
+                // Display the success message in the browser
                 $ajd_json = json_encode($ajd);
                 echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
-            
             }
             break;
         case 'bouton2':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','10:00:00','12:00:00')";
-            mysqli_query($conn, $sql);
-            $ajd_json = json_encode($ajd);//Convertit ajd en une chaine JSON grace à json_encore, pour convertir de PHP en javascript
-            echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez bien réservé pour le ' + ajd + ' de 10:00 à 12:00.');</script>";//Affiche une alterte de le navigateur, crée une variable ajd et la met en json
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','10:00:00','12:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 10:00 à 12:00.');</script>";
+            }
             break;
         case 'bouton3':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','12:00:00','14:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','12:00:00','14:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 12:00 à 14:00.');</script>";
+            }
             break;
         case 'bouton4':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','14:00:00','16:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','14:00:00','16:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 14:00 à 16:00.');</script>";
+            }
             break;
         case 'bouton5':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','16:00:00','18:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','16:00:00','18:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 16:00 à 18:00.');</script>";
+            }
             break;
         case 'bouton6':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','18:00:00','20:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','18:00:00','20:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 18:00 à 20:00.');</script>";
+            }
             break;
         case 'bouton7':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','20:00:00','22:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$today','20:00:00','22:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 20:00 à 22:00.');</script>";
+            }
             break;
         case 'bouton8':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','08:00:00','10:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','08:00:00','10:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
+            }
             break;
         case 'bouton9':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','10:00:00','12:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','10:00:00','12:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 10:00 à 12:00.');</script>";
+            }
             break;
         case 'bouton10':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','12:00:00','14:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','12:00:00','14:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 12:00 à 14:00.');</script>";
+            }
             break;
         case 'bouton11':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','14:00:00','16:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','14:00:00','16:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 14:00 à 16:00.');</script>";
+            }
             break;
         case 'bouton12':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','16:00:00','18:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','16:00:00','18:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 16:00 à 18:00.');</script>";
+            }
             break;
         case 'bouton13':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','18:00:00','20:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','18:00:00','20:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 18:00 à 20:00.');</script>";
+            }
             break;
         case 'bouton14':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','20:00:00','22:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','20:00:00','22:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 20:00 à 22:00.');</script>";
+            }
             break;
         case 'bouton15':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','08:00:00','10:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','08:00:00','10:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
+            }
             break;
         case 'bouton16':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','10:00:00','12:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','10:00:00','12:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 10:00 à 12:00.');</script>";
+            }
             break;
         case 'bouton17':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','12:00:00','14:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','12:00:00','14:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 12:00 à 14:00.');</script>";
+            }
             break;
         case 'bouton18':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','14:00:00','16:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','14:00:00','16:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 14:00 à 16:00.');</script>";
+            }
             break;
         case 'bouton19':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','16:00:00','18:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','16:00:00','18:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 16:00 à 18:00.');</script>";
+            }
             break;
         case 'bouton20':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','18:00:00','20:00:00')";
-            mysqli_query($conn, $sql);
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+            
+            if ($num_reservations > 0) {
+                // Déjà reserver
+                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            } else {
+                // Insere la reservation dans la BDD
+                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','18:00:00','20:00:00')";
+                mysqli_query($conn, $sql);
+                
+                // Publish the reservation message using MQTT
+                //$topic = 'bdd';
+                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
+                //$mqtt->publish($topic, $message, 0);
+                
+                // Display the success message in the browser
+                $ajd_json = json_encode($ajd);
+                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
+            }
             break;
         case 'bouton21':
             $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','20:00:00','22:00:00')";
@@ -309,6 +681,7 @@ if(isset($_POST['submit'])) {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="assets\img\parking.png">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/css/style.css">
@@ -360,14 +733,29 @@ setInterval(updateTime, 1000);
             <th><?php echo $ajdpluscinq?></th>
             <th><?php echo $ajdplussix?></th>
         </tr>
+        <?php
+        $count_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' ";
+        $result = mysqli_query($conn, $count_sql);
+        $row = mysqli_fetch_assoc($result);
+        $num_reservations = $row['num_reservations'];
+
+
+        // Vérifier si l'utilisateur a déjà effectué sept réservations
+                 if ($num_reservations >= 7) {
+                     $class1 = "boutonrouge";
+                 } else {
+                     // Insérer la réservation dans la base de données
+                     $class1 = "boutonnormal";}
+                ; ?>
         <tr>                <form method="post">
             <td>
+          
                 <button name="submit" type="submit" value="bouton1" class="<?php echo $class; ?>">
                     08:00
                 </button>
             </td>
             <td>
-                <button name="submit" type="submit" value="bouton8">
+                <button name="submit" type="submit" value="bouton8" >
                     08:00
                 </button>
             </td>
@@ -393,7 +781,7 @@ setInterval(updateTime, 1000);
         </tr>
         <tr>            
             <td>
-                <button name="submit" type="submit" value="bouton2">
+                <button name="submit" type="submit" value="bouton2" class="<?php echo /*(date('H:i') > '10:00') ? 'boutonrouge' :*/ $class; ?>">
                     10:00
                 </button>
             </td>
@@ -421,7 +809,7 @@ setInterval(updateTime, 1000);
         </tr>
         <tr>
             <td>
-                <button name="submit" type="submit" value="bouton3">
+                <button name="submit" type="submit" value="bouton3" class="<?php echo /*(date('H:i') > '10:00') ? 'boutonrouge' :*/ $class; ?>">
                     12:00
                 </button>
             </td>
@@ -458,7 +846,7 @@ setInterval(updateTime, 1000);
         </tr>
         <tr>
             <td>
-                <button name="submit" type="submit" value="bouton4">
+                <button name="submit" type="submit" value="bouton4"class="<?php echo /*(date('H:i') > '10:00') ? 'boutonrouge' :*/ $class; ?>">
                     14:00
                 </button>
             </td>
@@ -531,7 +919,7 @@ setInterval(updateTime, 1000);
         </tr>
         <tr>
             <td>
-                <button name="submit" type="submit" value="bouton6">
+                <button name="submit" type="submit" value="bouton2" class="<?php echo (date('H:i') > '18:00') ? 'boutonrouge' : $class; ?>">
                     18:00
                 </button>
             </td>
@@ -568,7 +956,7 @@ setInterval(updateTime, 1000);
         </tr>
         <tr>         
             <td>
-                <button name="submit" type="submit" value="bouton7">
+                <button name="submit" type="submit" value="bouton2" class="<?php echo (date('H:i') > '20:00') ? 'boutonrouge' : $class; ?>">
                     20:00
                 </button>
             </td>

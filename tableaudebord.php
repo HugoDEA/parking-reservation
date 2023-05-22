@@ -33,12 +33,17 @@ mysqli_close($conn);
 <!doctype html>
 <html lang="en">
 <head>
+<link rel="icon" type="image/png" href="assets\img\parking.png">
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Réservation Parking</title>
     <script src="assets/js/script.js"></script>
+    <script>// Rafraîchissement automatique de la page toutes les 10 secondes
+setInterval(function(){
+    location.reload();
+}, 10000);</script>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body id="test">

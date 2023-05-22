@@ -80,9 +80,12 @@ input{
      align-items: flex-end;
 
 }
+.boutonnormal{
 
+}
 .boutonrouge{
     background-color: red;
+    cursor: not-allowed;
 }
 
 .boutonadmin{
@@ -167,7 +170,13 @@ input{
     text-align: center;
 }
 
-
+p {
+    text-align: center; /* Centre le texte horizontalement */
+  }
+  .reservation {
+    font-weight: bold;
+  }
+  
 table {
     border-collapse: collapse; /* Pour que les bordures des cellules soient fusionnées */
     width: 100%;/*pour que la table prenne toute la largeur de la page*/
