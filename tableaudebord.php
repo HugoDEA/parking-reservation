@@ -27,9 +27,26 @@ $reserved_data = array();
 while ($row = mysqli_fetch_assoc($result)) {
   $reserved_data[] = $row;
 }
+
+
+function messageReceived($topic, $message)
+{
+    global $conn;
+
+    // Mise à jour de la colonne floor1_available dans la table status
+    $sql = "UPDATE status SET floor1_available = '$message'";
+    if ($conn->query($sql) === TRUE) {
+        echo "Valeur mise à jour avec succès dans la base de données.";
+    } else {
+        echo "Erreur lors de la mise à jour de la valeur dans la base de données : " . $conn->error;
+    }
+}
+$topic = 'etage1';
+
 // Fermer la connexion à la base de données
 mysqli_close($conn);
 ?>
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -43,7 +60,7 @@ mysqli_close($conn);
     <script>// Rafraîchissement automatique de la page toutes les 10 secondes
 setInterval(function(){
     location.reload();
-}, 10000);</script>
+}, 5000);</script>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body id="test">

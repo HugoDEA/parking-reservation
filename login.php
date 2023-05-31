@@ -15,6 +15,10 @@ if (!$conn) {
 $username = $_POST['username'];
 $password = $_POST['password'];
 
+echo "$password";
+$password = hash('sha256', $password);
+echo "$password";
+
 // Préparation de la requête SQL pour la table "useraccount"
 $user_sql = "SELECT * FROM useraccount WHERE username='$username' AND password='$password'";
 
