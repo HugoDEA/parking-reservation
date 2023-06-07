@@ -41,8 +41,6 @@ function messageReceived($topic, $message)
         echo "Erreur lors de la mise à jour de la valeur dans la base de données : " . $conn->error;
     }
 }
-$topic = 'etage1';
-
 // Fermer la connexion à la base de données
 mysqli_close($conn);
 ?>

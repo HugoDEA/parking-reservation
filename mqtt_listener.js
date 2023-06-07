@@ -10,7 +10,7 @@ const connection = mysql.createConnection({
 });
 
 // Connexion au serveur MQTT
-const client = mqtt.connect('mqtt://172.16.12.70', {
+const client = mqtt.connect('mqtt://192.168.137.246', {
     username: 'admin',
     password: '1234'
 });
@@ -22,6 +22,11 @@ const validationTopic = 'validation';
 
 // Variable pour vérifier si le numéro a déjà été traité
 let isProcessed = false;
+
+setInterval(() => {
+    isProcessed = false;
+    console.log("La variable isProcessed est maintenant false.");
+}, 10000);
 
 client.on('connect', () => {
     client.subscribe(topic1);
