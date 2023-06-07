@@ -274,40 +274,40 @@ $todayplussept= date("Y-m-d", strtotime('+7 day'));
             break;
 
         case 'bouton8':
-                // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
-                $check_sql = "SELECT COUNT(*) AS num_reservations FROM reservation WHERE starting_hour = '08:00:00' AND finishing_hour = '10:00:00' AND DATE = '$todayplusun'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '08:00:00' AND finishing_hour = '10:00:00' and DATE = '$todayplusun'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 08:00 à 10:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '08:00:00' AND finishing_hour = '10:00:00' AND DATE = '$todayplusun'";
                 $check_result = mysqli_query($conn, $check_sql);
                 $check_row = mysqli_fetch_assoc($check_result);
                 $num_reservations = $check_row['num_reservations'];
 
-                if ($num_reservations >= 7) {
-                    // La plage horaire est complète
-                    echo "<script>alert(\"La plage horaire 08:00 à 10:00 est complète.\");</script>";
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
                 } else {
-                    // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
-                    $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '08:00:00' AND finishing_hour = '10:00:00' AND DATE = '$todayplusun'";
-                    $check_result = mysqli_query($conn, $check_sql);
-                    $check_row = mysqli_fetch_assoc($check_result);
-                    $num_reservations = $check_row['num_reservations'];
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','08:00:00','10:00:00')";
+                    mysqli_query($conn, $sql);
 
-                    if ($num_reservations > 0) {
-                        // L'utilisateur a déjà une réservation de 10h à 12h
-                        echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
-                    } else {
-                        // Insérer la réservation dans la base de données
-                        $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','08:00:00','10:00:00')";
-                        mysqli_query($conn, $sql);
-
-                        // Afficher le message de réussite dans le navigateur
-                        $ajd_json = json_encode($ajdplusun);
-                        echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
-                    }
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusun);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
                 }
-                break;
+            }
+            break;
 
         case 'bouton9':
-            // Vérifier le nombre de réservations dans la plage horaire 10:00-12:00
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '10:00:00' AND finishing_hour = '12:00:00'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '10:00:00' AND finishing_hour = '12:00:00' and DATE = '$todayplusun'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
@@ -316,21 +316,19 @@ $todayplussept= date("Y-m-d", strtotime('+7 day'));
                 // La plage horaire est complète
                 echo "<script>alert(\"La plage horaire 10:00 à 12:00 est complète.\");</script>";
             } else {
-                // Vérifier si l'utilisateur a déjà une réservation de 10:00 à 12:00
-                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '10:00:00' AND finishing_hour = '12:00:00'";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '10:00:00' AND finishing_hour = '12:00:00' AND DATE = '$todayplusun'";
                 $check_result = mysqli_query($conn, $check_sql);
                 $check_row = mysqli_fetch_assoc($check_result);
                 $num_reservations = $check_row['num_reservations'];
 
                 if ($num_reservations > 0) {
-                    // L'utilisateur a déjà une réservation de 10:00 à 12:00
+                    // L'utilisateur a déjà une réservation de 10h à 12h
                     echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
                 } else {
                     // Insérer la réservation dans la base de données
                     $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','10:00:00','12:00:00')";
                     mysqli_query($conn, $sql);
-
-                    // Publier le message de réservation en utilisant MQTT
 
                     // Afficher le message de réussite dans le navigateur
                     $ajd_json = json_encode($ajdplusun);
@@ -339,403 +337,1244 @@ $todayplussept= date("Y-m-d", strtotime('+7 day'));
             }
             break;
         case 'bouton10':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '12:00:00' AND finishing_hour = '14:00:00' and DATE = '$todayplusun'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
-            
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 12:00 à 14:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','12:00:00','14:00:00')";
-                mysqli_query($conn, $sql);
-                
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
-                
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 12:00 à 14:00.');</script>";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '12:00:00' AND finishing_hour = '14:00:00' AND DATE = '$todayplusun'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','12:00:00','14:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusun);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 12:00 à 14:00.');</script>";
+                }
             }
             break;
         case 'bouton11':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '14:00:00' AND finishing_hour = '16:00:00' and DATE = '$todayplusun'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
-            
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 14:00 à 16:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','14:00:00','16:00:00')";
-                mysqli_query($conn, $sql);
-                
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
-                
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 14:00 à 16:00.');</script>";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '14:00:00' AND finishing_hour = '16:00:00' AND DATE = '$todayplusun'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','14:00:00','16:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusun);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 14:00 à 16:00.');</script>";
+                }
             }
             break;
         case 'bouton12':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '16:00:00' AND finishing_hour = '18:00:00' and DATE = '$todayplusun'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
-            
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 16:00 à 18:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','16:00:00','18:00:00')";
-                mysqli_query($conn, $sql);
-                
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
-                
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 16:00 à 18:00.');</script>";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '16:00:00' AND finishing_hour = '18:00:00' AND DATE = '$todayplusun'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','16:00:00','18:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusun);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 16:00 à 18:00.');</script>";
+                }
             }
             break;
         case 'bouton13':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '18:00:00' AND finishing_hour = '20:00:00' and DATE = '$todayplusun'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
-            
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 18:00 à 20:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','18:00:00','20:00:00')";
-                mysqli_query($conn, $sql);
-                
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
-                
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 18:00 à 20:00.');</script>";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '18:00:00' AND finishing_hour = '20:00:00' AND DATE = '$todayplusun'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','18:00:00','20:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusun);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 18:00 à 20:00.');</script>";
+                }
             }
             break;
         case 'bouton14':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '20:00:00' AND finishing_hour = '22:00:00' and DATE = '$todayplusun'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
-            
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 20:00 à 22:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','20:00:00','22:00:00')";
-                mysqli_query($conn, $sql);
-                
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
-                
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 20:00 à 22:00.');</script>";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '20:00:00' AND finishing_hour = '22:00:00' AND DATE = '$todayplusun'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusun','20:00:00','22:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusun);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 20:00 à 22:00.');</script>";
+                }
             }
             break;
         case 'bouton15':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '08:00:00' AND finishing_hour = '10:00:00' and DATE = '$todayplusdeux'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
-            
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 08:00 à 10:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','08:00:00','10:00:00')";
-                mysqli_query($conn, $sql);
-                
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
-                
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '08:00:00' AND finishing_hour = '10:00:00' AND DATE = '$todayplusdeux'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','08:00:00','10:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusdeux);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
+                }
             }
             break;
         case 'bouton16':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '10:00:00' AND finishing_hour = '12:00:00' and DATE = '$todayplusdeux'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
-            
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 10:00 à 12:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','10:00:00','12:00:00')";
-                mysqli_query($conn, $sql);
-                
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
-                
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 10:00 à 12:00.');</script>";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '10:00:00' AND finishing_hour = '12:00:00' AND DATE = '$todayplusdeux'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','10:00:00','12:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusdeux);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 10:00 à 12:00.');</script>";
+                }
             }
             break;
         case 'bouton17':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '12:00:00' AND finishing_hour = '14:00:00' and DATE = '$todayplusdeux'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
-            
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 12:00 à 14:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','12:00:00','14:00:00')";
-                mysqli_query($conn, $sql);
-                
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
-                
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 12:00 à 14:00.');</script>";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '12:00:00' AND finishing_hour = '14:00:00' AND DATE = '$todayplusdeux'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','12:00:00','14:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusdeux);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 12:00 à 14:00.');</script>";
+                }
             }
             break;
         case 'bouton18':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '14:00:00' AND finishing_hour = '16:00:00' and DATE = '$todayplusdeux'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
-            
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 14:00 à 16:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','14:00:00','16:00:00')";
-                mysqli_query($conn, $sql);
-                
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
-                
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 14:00 à 16:00.');</script>";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '14:00:00' AND finishing_hour = '16:00:00' AND DATE = '$todayplusdeux'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','14:00:00','16:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusdeux);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 14:00 à 16:00.');</script>";
+                }
             }
             break;
         case 'bouton19':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '16:00:00' AND finishing_hour = '18:00:00' and DATE = '$todayplusdeux'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
-            
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 16:00 à 18:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','16:00:00','18:00:00')";
-                mysqli_query($conn, $sql);
-                
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
-                
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 16:00 à 18:00.');</script>";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '16:00:00' AND finishing_hour = '18:00:00' AND DATE = '$todayplusdeux'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','16:00:00','18:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusdeux);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 16:00 à 18:00.');</script>";
+                }
             }
             break;
         case 'bouton20':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '18:00:00' AND finishing_hour = '20:00:00' and DATE = '$todayplusdeux'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
-            
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 18:00 à 20:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','18:00:00','20:00:00')";
-                mysqli_query($conn, $sql);
-                
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
-                
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 18:00 à 20:00.');</script>";
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '18:00:00' AND finishing_hour = '20:00:00' AND DATE = '$todayplusdeux'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','18:00:00','20:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusdeux);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 18:00 à 20:00.');</script>";
+                }
             }
             break;
         case 'bouton21':
-            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid'";
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '20:00:00' AND finishing_hour = '22:00:00' and DATE = '$todayplusdeux'";
             $check_result = mysqli_query($conn, $check_sql);
             $check_row = mysqli_fetch_assoc($check_result);
             $num_reservations = $check_row['num_reservations'];
 
-            if ($num_reservations > 0) {
-                // Déjà reserver
-                echo "<script>alert(\"Vous avez déjà une réservation.\");</script>";
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 20:00 à 22:00 est complète.\");</script>";
             } else {
-                // Insere la reservation dans la BDD
-                $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','20:00:00','22:00:00')";
-                mysqli_query($conn, $sql);
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '20:00:00' AND finishing_hour = '22:00:00' AND DATE = '$todayplusdeux'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
 
-                // Publish the reservation message using MQTT
-                //$topic = 'bdd';
-                //$message = "2023-04-17, 08:00:00 à 10:00:00, 156LEF56";
-                //$mqtt->publish($topic, $message, 0);
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusdeux','20:00:00','22:00:00')";
+                    mysqli_query($conn, $sql);
 
-                // Display the success message in the browser
-                $ajd_json = json_encode($ajd);
-                echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 20:00 à 22:00.');</script>";
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusdeux);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 20:00 à 22:00.');</script>";
+                }
             }
             break;
         case 'bouton22':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','08:00:00','10:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '08:00:00' AND finishing_hour = '10:00:00' and DATE = '$todayplustrois'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 08:00 à 10:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '08:00:00' AND finishing_hour = '10:00:00' AND DATE = '$todayplustrois'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','08:00:00','10:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplustrois);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
+                }
+            }
             break;
         case 'bouton23':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','10:00:00','12:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '10:00:00' AND finishing_hour = '12:00:00' and DATE = '$todayplustrois'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 10:00 à 12:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '10:00:00' AND finishing_hour = '12:00:00' AND DATE = '$todayplustrois'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','10:00:00','12:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplustrois);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 10:00 à 12:00.');</script>";
+                }
+            }
             break;
         case 'bouton24':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','12:00:00','14:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '12:00:00' AND finishing_hour = '14:00:00' and DATE = '$todayplustrois'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 12:00 à 14:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '12:00:00' AND finishing_hour = '14:00:00' AND DATE = '$todayplustrois'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','12:00:00','14:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplustrois);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 12:00 à 14:00.');</script>";
+                }
+            }
             break;
         case 'bouton25':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','14:00:00','16:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '14:00:00' AND finishing_hour = '16:00:00' and DATE = '$todayplustrois'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 12:00 à 14:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '14:00:00' AND finishing_hour = '16:00:00' AND DATE = '$todayplustrois'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','14:00:00','16:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplustrois);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 14:00 à 16:00.');</script>";
+                }
+            }
             break;
         case 'bouton26':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','16:00:00','18:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '16:00:00' AND finishing_hour = '18:00:00' and DATE = '$todayplustrois'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 16:00 à 18:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '16:00:00' AND finishing_hour = '18:00:00' AND DATE = '$todayplustrois'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','16:00:00','18:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplustrois);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 16:00 à 18:00.');</script>";
+                }
+            }
             break;
         case 'bouton27':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','18:00:00','20:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '18:00:00' AND finishing_hour = '20:00:00' and DATE = '$todayplustrois'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 18:00 à 20:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '18:00:00' AND finishing_hour = '20:00:00' AND DATE = '$todayplustrois'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','18:00:00','20:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplustrois);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 18:00 à 20:00.');</script>";
+                }
+            }
             break;
         case 'bouton28':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','20:00:00','22:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '20:00:00' AND finishing_hour = '22:00:00' and DATE = '$todayplustrois'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 20:00 à 22:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '20:00:00' AND finishing_hour = '22:00:00' AND DATE = '$todayplustrois'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplustrois','20:00:00','22:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplustrois);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 20:00 à 22:00.');</script>";
+                }
+            }
             break;
         case 'bouton29':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','08:00:00','10:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '08:00:00' AND finishing_hour = '10:00:00' and DATE = '$todayplusquatre'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 08:00 à 10:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '08:00:00' AND finishing_hour = '10:00:00' AND DATE = '$todayplusquatre'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','08:00:00','10:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusquatre);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
+                }
+            }
             break;
         case 'bouton30':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','10:00:00','12:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '10:00:00' AND finishing_hour = '12:00:00' and DATE = '$todayplusquatre'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 10:00 à 12:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '10:00:00' AND finishing_hour = '12:00:00' AND DATE = '$todayplusquatre'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','10:00:00','12:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusquatre);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 10:00 à 12:00.');</script>";
+                }
+            }
             break;
         case 'bouton31':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','12:00:00','14:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '12:00:00' AND finishing_hour = '14:00:00' and DATE = '$todayplusquatre'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 12:00 à 14:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '12:00:00' AND finishing_hour = '14:00:00' AND DATE = '$todayplusquatre'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','12:00:00','14:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusquatre);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 12:00 à 14:00.');</script>";
+                }
+            }
             break;
         case 'bouton32':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','14:00:00','16:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '14:00:00' AND finishing_hour = '16:00:00' and DATE = '$todayplusquatre'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 14:00 à 16:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '14:00:00' AND finishing_hour = '16:00:00' AND DATE = '$todayplusquatre'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','14:00:00','16:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusquatre);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 14:00 à 16:00.');</script>";
+                }
+            }
             break;
         case 'bouton33':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','16:00:00','18:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '16:00:00' AND finishing_hour = '18:00:00' and DATE = '$todayplusquatre'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 16:00 à 18:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '16:00:00' AND finishing_hour = '18:00:00' AND DATE = '$todayplusquatre'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','16:00:00','18:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusquatre);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 16:00 à 18:00.');</script>";
+                }
+            }
             break;
         case 'bouton34':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','18:00:00','20:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '18:00:00' AND finishing_hour = '20:00:00' and DATE = '$todayplusquatre'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 18:00 à 12:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '18:00:00' AND finishing_hour = '20:00:00' AND DATE = '$todayplusquatre'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','18:00:00','20:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusquatre);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 18:00 à 20:00.');</script>";
+                }
+            }
             break;
         case 'bouton35':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','20:00:00','22:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '20:00:00' AND finishing_hour = '22:00:00' and DATE = '$todayplusquatre'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 20:00 à 22:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '20:00:00' AND finishing_hour = '22:00:00' AND DATE = '$todayplusquatre'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplusquatre','20:00:00','22:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplusquatre);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 20:00 à 22:00.');</script>";
+                }
+            }
             break;
         case 'bouton36':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','08:00:00','10:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '08:00:00' AND finishing_hour = '10:00:00' and DATE = '$todaypluscinq'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 08:00 à 10:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '08:00:00' AND finishing_hour = '10:00:00' AND DATE = '$todaypluscinq'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','08:00:00','10:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdpluscinq);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
+                }
+            }
             break;
         case 'bouton37':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','10:00:00','12:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '10:00:00' AND finishing_hour = '12:00:00' and DATE = '$todaypluscinq'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 10:00 à 12:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '10:00:00' AND finishing_hour = '12:00:00' AND DATE = '$todaypluscinq'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','10:00:00','12:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdpluscinq);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 10:00 à 12:00.');</script>";
+                }
+            }
             break;
         case 'bouton38':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','12:00:00','14:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '12:00:00' AND finishing_hour = '14:00:00' and DATE = '$todaypluscinq'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 12:00 à 14:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '12:00:00' AND finishing_hour = '14:00:00' AND DATE = '$todaypluscinq'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','12:00:00','14:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdpluscinq);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 12:00 à 14:00.');</script>";
+                }
+            }
             break;
         case 'bouton39':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','14:00:00','16:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '14:00:00' AND finishing_hour = '16:00:00' and DATE = '$todaypluscinq'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 14:00 à 16:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '14:00:00' AND finishing_hour = '16:00:00' AND DATE = '$todaypluscinq'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','14:00:00','16:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdpluscinq);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 14:00 à 16:00.');</script>";
+                }
+            }
             break;
         case 'bouton40':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','16:00:00','18:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '16:00:00' AND finishing_hour = '18:00:00' and DATE = '$todaypluscinq'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 16:00 à 18:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '16:00:00' AND finishing_hour = '18:00:00' AND DATE = '$todaypluscinq'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','16:00:00','18:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdpluscinq);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 16:00 à 18:00.');</script>";
+                }
+            }
             break;
         case 'bouton41':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','18:00:00','20:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '18:00:00' AND finishing_hour = '20:00:00' and DATE = '$todaypluscinq'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 18:00 à 20:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '18:00:00' AND finishing_hour = '20:00:00' AND DATE = '$todaypluscinq'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','18:00:00','20:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdpluscinq);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 18:00 à 20:00.');</script>";
+                }
+            }
             break;
         case 'bouton42':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','20:00:00','22:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '20:00:00' AND finishing_hour = '22:00:00' and DATE = '$todaypluscinq'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 20:00 à 22:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '20:00:00' AND finishing_hour = '22:00:00' AND DATE = '$todaypluscinq'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todaypluscinq','20:00:00','22:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdpluscinq);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 20:00 à 22:00.');</script>";
+                }
+            }
+            break;
         case 'bouton43':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','08:00:00','10:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '08:00:00' AND finishing_hour = '10:00:00' and DATE = '$todayplussix'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 08:00 à 10:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '08:00:00' AND finishing_hour = '10:00:00' AND DATE = '$todayplussix'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','08:00:00','10:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplussix);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 08:00 à 10:00.');</script>";
+                }
+            }
             break;
         case 'bouton44':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','10:00:00','12:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '10:00:00' AND finishing_hour = '12:00:00' and DATE = '$todayplussix'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 10:00 à 12:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '10:00:00' AND finishing_hour = '12:00:00' AND DATE = '$todayplussix'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','10:00:00','12:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplussix);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 10:00 à 12:00.');</script>";
+                }
+            }
             break;
         case 'bouton45':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','12:00:00','14:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '12:00:00' AND finishing_hour = '14:00:00' and DATE = '$todayplussix'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 12:00 à 14:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '12:00:00' AND finishing_hour = '14:00:00' AND DATE = '$todayplussix'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','12:00:00','14:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplussix);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 12:00 à 14:00.');</script>";
+                }
+            }
             break;
         case 'bouton46':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','14:00:00','16:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '14:00:00' AND finishing_hour = '16:00:00' and DATE = '$todayplussix'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 14:00 à 16:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '14:00:00' AND finishing_hour = '16:00:00' AND DATE = '$todayplussix'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','14:00:00','16:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplussix);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 14:00 à 16:00.');</script>";
+                }
+            }
             break;
         case 'bouton47':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','16:00:00','18:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '16:00:00' AND finishing_hour = '18:00:00' and DATE = '$todayplussix'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 16:00 à 18:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '16:00:00' AND finishing_hour = '18:00:00' AND DATE = '$todayplussix'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','16:00:00','18:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplussix);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 16:00 à 18:00.');</script>";
+                }
+            }
             break;
         case 'bouton48':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','18:00:00','20:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '18:00:00' AND finishing_hour = '20:00:00' and DATE = '$todayplussix'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 18:00 à 20:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '18:00:00' AND finishing_hour = '20:00:00' AND DATE = '$todayplussix'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','18:00:00','20:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplussix);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 18:00 à 20:00.');</script>";
+                }
+            }
             break;
         case 'bouton49':
-            $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','20:00:00','22:00:00')";
-            mysqli_query($conn, $sql);
+            // Vérifier le nombre de réservations dans la plage horaire 08:00-10:00
+            $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE starting_hour = '20:00:00' AND finishing_hour = '22:00:00' and DATE = '$todayplussix'";
+            $check_result = mysqli_query($conn, $check_sql);
+            $check_row = mysqli_fetch_assoc($check_result);
+            $num_reservations = $check_row['num_reservations'];
+
+            if ($num_reservations >= 7) {
+                // La plage horaire est complète
+                echo "<script>alert(\"La plage horaire 20:00 à 22:00 est complète.\");</script>";
+            } else {
+                // Vérifier si l'utilisateur a déjà une réservation de 10h à 12h
+                $check_sql = "SELECT COUNT(*) as num_reservations FROM reservation WHERE RFID = '$rfid' AND starting_hour = '20:00:00' AND finishing_hour = '22:00:00' AND DATE = '$todayplussix'";
+                $check_result = mysqli_query($conn, $check_sql);
+                $check_row = mysqli_fetch_assoc($check_result);
+                $num_reservations = $check_row['num_reservations'];
+
+                if ($num_reservations > 0) {
+                    // L'utilisateur a déjà une réservation de 10h à 12h
+                    echo "<script>alert(\"Vous avez déjà réservé pour cette heure.\");</script>";
+                } else {
+                    // Insérer la réservation dans la base de données
+                    $sql = "INSERT INTO reservation (RFID, date, starting_hour, finishing_hour) VALUES ('$rfid','$todayplussix','20:00:00','22:00:00')";
+                    mysqli_query($conn, $sql);
+
+                    // Afficher le message de réussite dans le navigateur
+                    $ajd_json = json_encode($ajdplussix);
+                    echo "<script>var ajd = JSON.parse('$ajd_json'); alert('Vous avez réservé avec succès un créneau horaire le ' + ajd + ' de 20:00 à 22:00.');</script>";
+                }
+            }
             break;
         default:
             echo "Erreur : valeur inconnue.";
